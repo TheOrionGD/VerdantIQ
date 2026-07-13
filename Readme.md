@@ -575,7 +575,7 @@ Instead of embedding ML directly inside Spring Boot, keep it as a separate servi
 
 | Technology               | Purpose                                                              |
 | ------------------------ | -------------------------------------------------------------------- |
-| OpenAI API or Gemini API | Natural-language explanations, report generation, decision assistant |
+|Groq API| Natural-language explanations, report generation, decision assistant |
 
 **AI should not perform predictions.**
 
@@ -712,7 +712,7 @@ Behavior Learning   Prediction Engine   Optimization Engine
                            │
                            ▼
                      AI Assistant
-               (OpenAI / Gemini API)
+               (OpenAI / Groq API)
                            │
                            ▼
           Reports • Recommendations • Explanations
@@ -764,7 +764,7 @@ Behavior Learning   Prediction Engine   Optimization Engine
 
 ### Artificial Intelligence
 
-* OpenAI API or Gemini API
+* Groq API
 
 ### External APIs
 
