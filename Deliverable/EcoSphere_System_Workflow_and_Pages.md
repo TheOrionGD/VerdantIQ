@@ -3,7 +3,7 @@
 EcoSphere (VerdantIQ) is a machine learning-driven Environmental Decision Support and Sustainability Intelligence Platform. This document outlines the end-to-end operational workflows of the system and details the application's pages, features, interactive actions, and underlying system behaviors.
 
 ---
-
+ 
 ## 1. System Roles and Access Control
 
 To support institutional, community, and individual usage, the system defines three primary roles:

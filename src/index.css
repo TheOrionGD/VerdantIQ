@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: #059669;
+    --color-secondary: #0F766E;
+    --color-bg: #F3F7F5;
+    --color-surface: #FFFFFF;
+    --color-text-main: #0F172A;
+    --color-text-muted: #475569;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text-main);
+    overflow: hidden;
+  }
+}
+
+/* Spatial Canvas Background Radial Dot Grid */
+.bg-spatial-grid {
+  background-color: #F3F7F5;
+  background-image: radial-gradient(#CBD5E1 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
+}
+
+/* Glassmorphism Card Panels */
+.glass-node {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 10px 30px -5px rgba(15, 118, 110, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+}
+
+.glass-node-focused {
+  background: #FFFFFF;
+  border: 1.5px solid rgba(5, 150, 105, 0.4);
+  box-shadow: 0 20px 50px -10px rgba(5, 150, 105, 0.2), 0 0 20px 0 rgba(5, 150, 105, 0.1);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+
+/* Animated SVG Stream Lines */
+.path-stream-animated {
+  stroke-dasharray: 8 6;
+  animation: dash 25s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -200;
+  }
+}

@@ -503,7 +503,7 @@ I would aim for a **production-style but feasible final-year project**. There's 
 
 | Technology                   | Purpose                                        |
 | ---------------------------- | ---------------------------------------------- |
-| React.js                     | Frontend framework                             |
+| Nextjs                     | Frontend framework                             |
 | TypeScript                   | Type safety and maintainability                |
 | Tailwind CSS                 | Modern responsive UI                           |
 | Material UI (MUI)            | Professional dashboard components              |
@@ -724,7 +724,7 @@ Behavior Learning   Prediction Engine   Optimization Engine
 
 ### Frontend
 
-* React.js
+* Nextjs
 * TypeScript
 * Tailwind CSS
 * Material UI
