@@ -40,7 +40,7 @@ export const InstitutionAdminNode = () => {
             {queue.map((item) => (
               <div
                 key={item.id}
-                className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-between"
+                className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
               >
                 <div>
                   <div className="text-xs font-bold text-slate-800">{item.user} — <span className="text-emerald-mint">{item.challenge}</span></div>

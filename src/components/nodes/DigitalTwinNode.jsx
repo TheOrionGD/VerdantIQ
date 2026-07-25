@@ -18,9 +18,9 @@ export const DigitalTwinNode = () => {
   const totalOffset = twinUpgrades.reduce((acc, item) => acc + item.co2Offset, 0);
 
   return (
-    <div className="grid grid-cols-12 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
       {/* Left 2D House Schematic Sandbox */}
-      <div className="col-span-6 space-y-4">
+      <div className="col-span-1 md:col-span-6 space-y-4">
         <div className="p-5 rounded-3xl bg-slate-900 text-white relative min-h-[300px] flex flex-col justify-between overflow-hidden shadow-xl">
           <div className="flex items-center justify-between z-10">
             <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800">
@@ -83,7 +83,7 @@ export const DigitalTwinNode = () => {
       </div>
 
       {/* Right Upgrade Library & ROI Calculator */}
-      <div className="col-span-6 space-y-4">
+      <div className="col-span-1 md:col-span-6 space-y-4">
         <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500">
           Simulated Hardware Upgrades Library
         </h4>

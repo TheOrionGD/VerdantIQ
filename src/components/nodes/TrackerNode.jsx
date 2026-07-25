@@ -33,7 +33,7 @@ export const TrackerNode = () => {
   return (
     <div className="space-y-6">
       {/* Category Tabs */}
-      <div className="flex items-center space-x-2 border-b border-slate-200 pb-3">
+      <div className="flex items-center space-x-2 border-b border-slate-200 pb-3 overflow-x-auto scrollbar-none no-scrollbar flex-nowrap">
         {[
           { id: 'Transport', icon: Car },
           { id: 'Electricity', icon: Zap },

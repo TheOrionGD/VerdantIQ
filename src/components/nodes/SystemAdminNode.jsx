@@ -34,7 +34,7 @@ export const SystemAdminNode = () => {
   return (
     <div className="space-y-6">
       {/* Telemetry Status Grid */}
-      <div className="grid grid-cols-4 gap-3 text-center">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
         <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm">
           <div className="text-[10px] font-bold text-slate-400 uppercase">Redis Latency</div>
           <div className="text-xl font-black text-emerald-mint mt-1">{telemetry.redisLatencyMs} ms</div>

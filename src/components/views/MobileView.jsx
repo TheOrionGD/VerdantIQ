@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useEcoSphere } from '../../context/EcoSphereContext';
 import { ViewModeToggle } from '../common/ViewModeToggle';
+import { RoleSwitcher } from '../common/RoleSwitcher';
+import { ROLES, ROLE_NAVIGATION } from '../../config/rbacConfig';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import {
   Leaf, Home, Activity, Sparkles, MessageSquare, Menu, Award, Cpu,
   BrainCircuit, ShieldCheck, Settings, ChevronRight, X, Zap, Droplets, Car,
@@ -377,7 +380,7 @@ const MobileAnalytics = () => {
       <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-3">
         <div className="text-xs font-extrabold uppercase tracking-wider text-forest-teal">Explainable AI Reasoning</div>
         <p className="text-xs text-slate-700 leading-relaxed font-medium">
-          "On Wednesday, energy consumption spiked by <span className="font-bold text-amber-600">15.6%</span> due to thermal HVAC adjustment matching OpenWeather 34°C high."
+          &quot;On Wednesday, energy consumption spiked by <span className="font-bold text-amber-600">15.6%</span> due to thermal HVAC adjustment matching OpenWeather 34°C high.&quot;
         </p>
         <button
           onClick={() => executeOmnibarCommand('why energy spike?')}
@@ -452,95 +455,75 @@ const MobileAssistant = () => {
 
 // --- MAIN MOBILE VIEW SHELL ---
 export const MobileView = () => {
-  const { ecoScore } = useEcoSphere();
-  const [mobileTab, setMobileTab] = useState('home');
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const { userRole, currentUser, logout } = useEcoSphere();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const currentRoleNav = ROLE_NAVIGATION[userRole] || ROLE_NAVIGATION[ROLES.USER];
+
+  const handleSignOut = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-slate-900 flex items-center justify-center p-0 md:p-6 font-sans select-none">
-      {/* Smartphone Device Shell */}
-      <div className="w-full h-full max-w-sm max-h-[844px] bg-slate-50 md:rounded-[48px] border-0 md:border-[10px] md:border-slate-800 shadow-2xl flex flex-col relative overflow-hidden">
-        {/* Mobile Top Status Notch Bar */}
-        <div className="h-10 bg-white px-6 flex items-center justify-between border-b border-slate-100 flex-shrink-0 z-30">
-          <span className="text-[11px] font-bold text-slate-800">9:41</span>
-          <div className="w-20 h-4 bg-slate-900 rounded-full mx-auto hidden md:block" />
-          <span className="text-[10px] font-bold text-emerald-mint bg-emerald-50 px-2 py-0.5 rounded-full">
-            5G
-          </span>
-        </div>
-
+    <div className="w-screen h-screen overflow-hidden bg-slate-900 flex items-center justify-center font-sans select-none">
+      <div className="w-full max-w-md h-full bg-slate-50 flex flex-col overflow-hidden relative shadow-2xl">
         {/* Mobile Header Bar */}
-        <div className="px-4 py-3 bg-white border-b border-slate-200/80 flex items-center justify-between z-20 shadow-sm flex-shrink-0">
+        <div className="h-14 px-4 bg-white border-b border-slate-200 flex items-center justify-between z-30 flex-shrink-0">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-mint to-forest-teal flex items-center justify-center shadow-sm">
+            <div className="w-8 h-8 rounded-lg bg-emerald-mint flex items-center justify-center">
               <Leaf className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="text-sm font-extrabold text-slate-900 tracking-tight">EcoSphere Mobile</h1>
-              <p className="text-[10px] text-slate-400 font-semibold">VerdantIQ Mobile App</p>
+              <h1 className="text-xs font-black text-slate-900 leading-tight">EcoSphere</h1>
+              <p className="text-[9px] text-slate-400 font-semibold uppercase">{userRole.replace('_', ' ')}</p>
             </div>
           </div>
 
-          <span className="text-[11px] font-bold text-emerald-mint bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-            {ecoScore} Score
-          </span>
+          <div className="flex items-center space-x-2">
+            <div className="w-7 h-7 rounded-lg bg-slate-100 text-slate-800 font-bold text-[10px] flex items-center justify-center border border-slate-200">
+              {currentUser?.avatar || 'US'}
+            </div>
+            <button
+              onClick={handleSignOut}
+              className="p-1.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 text-[10px] font-bold"
+              title="Sign Out"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
 
         {/* View Mode Switcher Header Strip */}
-        <div className="px-3 py-2 bg-slate-100 border-b border-slate-200/80 flex items-center justify-center flex-shrink-0">
+        <div className="px-3 py-1.5 bg-slate-100 border-b border-slate-200/80 flex items-center justify-center flex-shrink-0">
           <ViewModeToggle className="scale-90" />
         </div>
 
         {/* Mobile Main Content Viewport */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
-          {mobileTab === 'home' && <MobileHome />}
-          {mobileTab === 'tracker' && <MobileTracker />}
-          {mobileTab === 'twin' && <MobileTwin />}
-          {mobileTab === 'analytics' && <MobileAnalytics />}
-          {mobileTab === 'ai' && <MobileAssistant />}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-3.5 sm:p-4 space-y-4 bg-slate-50 w-full max-w-full mobile-view-container">
+          <Outlet />
         </div>
 
-        {/* Mobile Bottom Navigation Bar */}
+        {/* Mobile Bottom Navigation Bar (Role-Aware) */}
         <nav className="h-16 bg-white border-t border-slate-200 flex items-center justify-around px-2 z-30 flex-shrink-0">
-          <button
-            onClick={() => setMobileTab('home')}
-            className={`flex flex-col items-center space-y-1 ${mobileTab === 'home' ? 'text-emerald-mint font-bold' : 'text-slate-400'}`}
-          >
-            <Home className="w-5 h-5" />
-            <span className="text-[10px]">Home</span>
-          </button>
+          {currentRoleNav.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
 
-          <button
-            onClick={() => setMobileTab('tracker')}
-            className={`flex flex-col items-center space-y-1 ${mobileTab === 'tracker' ? 'text-emerald-mint font-bold' : 'text-slate-400'}`}
-          >
-            <Activity className="w-5 h-5" />
-            <span className="text-[10px]">Tracker</span>
-          </button>
-
-          <button
-            onClick={() => setMobileTab('twin')}
-            className={`flex flex-col items-center space-y-1 ${mobileTab === 'twin' ? 'text-emerald-mint font-bold' : 'text-slate-400'}`}
-          >
-            <Sparkles className="w-5 h-5" />
-            <span className="text-[10px]">Twin</span>
-          </button>
-
-          <button
-            onClick={() => setMobileTab('analytics')}
-            className={`flex flex-col items-center space-y-1 ${mobileTab === 'analytics' ? 'text-emerald-mint font-bold' : 'text-slate-400'}`}
-          >
-            <BrainCircuit className="w-5 h-5" />
-            <span className="text-[10px]">Analytics</span>
-          </button>
-
-          <button
-            onClick={() => setMobileTab('ai')}
-            className={`flex flex-col items-center space-y-1 ${mobileTab === 'ai' ? 'text-emerald-mint font-bold' : 'text-slate-400'}`}
-          >
-            <MessageSquare className="w-5 h-5" />
-            <span className="text-[10px]">AI</span>
-          </button>
+            return (
+              <button
+                key={item.id}
+                onClick={() => navigate(item.path)}
+                className={`flex flex-col items-center space-y-1 py-1 px-2 rounded-lg transition-all ${
+                  isActive ? 'text-emerald-mint font-bold' : 'text-slate-400'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="text-[9px] truncate max-w-[56px]">{item.shortLabel}</span>
+              </button>
+            );
+          })}
         </nav>
       </div>
     </div>

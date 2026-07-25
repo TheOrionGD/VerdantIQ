@@ -1,18 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useEcoSphere } from '../../context/EcoSphereContext';
 import { ViewModeToggle } from '../common/ViewModeToggle';
-import { ZoomIn, ZoomOut, RotateCcw, Compass, ArrowLeft, Leaf, Layers } from 'lucide-react';
+import { ROLE_DETAILS, ROLES } from '../../config/rbacConfig';
+import { ZoomIn, ZoomOut, RotateCcw, ArrowLeft, Leaf, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const SpatialCanvas = ({ children }) => {
-  const { scale, setScale, pan, setPan, focusedNodeId, resetFocus, NODE_LAYOUT } = useEcoSphere();
+  const { scale, setScale, pan, setPan, focusedNodeId, resetFocus, userRole, currentUser, logout } = useEcoSphere();
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
+  const navigate = useNavigate();
+
+  const currentRoleObj = ROLE_DETAILS[userRole] || ROLE_DETAILS[ROLES.USER];
+
+  const handleSignOut = () => {
+    logout();
+    navigate('/login');
+  };
 
   // Mouse wheel zoom logic
   const handleWheel = (e) => {
     e.preventDefault();
-    if (focusedNodeId) return; // Ignore wheel zoom when focused on a single card
+    if (focusedNodeId) return;
 
     const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
     setScale((prevScale) => Math.min(Math.max(0.35, prevScale * zoomFactor), 1.6));
@@ -54,63 +64,90 @@ export const SpatialCanvas = ({ children }) => {
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
     >
-      {/* Top Header Floating Glass Navigation & Status Bar */}
-      <div className="fixed top-6 left-8 z-50 flex items-center space-x-4 pointer-events-auto">
-        <div className="flex items-center space-x-3 px-5 py-3 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-lg">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-mint to-forest-teal flex items-center justify-center shadow-md">
-            <Leaf className="w-5 h-5 text-white" />
+      {/* Top Left Branding & Active Role Badge */}
+      <div className="fixed top-4 left-6 z-50 flex items-center space-x-3 pointer-events-auto">
+        <div className="flex items-center space-x-3 px-4 py-2.5 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200 shadow-lg">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-mint to-forest-teal flex items-center justify-center shadow-md shrink-0">
+            <Leaf className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h1 className="text-base font-extrabold tracking-tight text-deep-charcoal flex items-center gap-1.5">
-              EcoSphere <span className="text-xs font-semibold text-emerald-mint px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200">v2.4 Spatial</span>
+            <h1 className="text-sm font-extrabold tracking-tight text-slate-900 flex items-center gap-1.5 leading-tight">
+              EcoSphere
+              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase border ${currentRoleObj.badgeClass}`}>
+                {currentRoleObj.label}
+              </span>
             </h1>
-            <p className="text-xs text-slate-gray">VerdantIQ Environmental Intelligence</p>
+            <p className="text-[10px] text-slate-500 font-bold">{currentRoleObj.canvasTitle || 'Spatial Intelligence Canvas'}</p>
           </div>
         </div>
-
-        {/* View Mode Switcher Toggle Pill */}
-        <ViewModeToggle />
 
         {focusedNodeId && (
           <button
             onClick={resetFocus}
-            className="flex items-center space-x-2 px-4 py-3 rounded-2xl bg-white/90 backdrop-blur-md border border-emerald-mint/30 shadow-lg hover:bg-emerald-50 text-emerald-700 font-semibold text-xs transition-all animate-fade-in"
+            className="flex items-center space-x-2 px-3.5 py-2.5 rounded-2xl bg-white/90 backdrop-blur-md border border-emerald-mint/40 shadow-lg hover:bg-emerald-50 text-emerald-700 font-bold text-xs transition-all animate-fade-in"
           >
             <ArrowLeft className="w-4 h-4 text-emerald-mint" />
-            <span>Exit to Spatial Canvas</span>
+            <span>Exit Focus</span>
           </button>
         )}
       </div>
 
-      {/* Top Right Zoom Controls & Mini Map Indicator */}
-      <div className="fixed top-6 right-8 z-50 flex items-center space-x-2 pointer-events-auto">
-        <div className="flex items-center bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-1.5 shadow-lg space-x-1">
+      {/* Top Center View Mode Switcher */}
+      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-auto hidden md:block">
+        <ViewModeToggle />
+      </div>
+
+      {/* Top Right Zoom Controls & User Profile */}
+      <div className="fixed top-4 right-6 z-50 flex items-center space-x-3 pointer-events-auto">
+        {/* Zoom Controls */}
+        <div className="flex items-center bg-white/90 backdrop-blur-md border border-slate-200 rounded-2xl p-1 shadow-lg space-x-1">
           <button
             onClick={() => setScale((s) => Math.min(1.6, s + 0.15))}
-            className="p-2 rounded-xl text-slate-600 hover:text-emerald-mint hover:bg-slate-100 transition-all"
+            className="p-1.5 rounded-xl text-slate-600 hover:text-emerald-mint hover:bg-slate-100 transition-all"
             title="Zoom In"
           >
             <ZoomIn className="w-4 h-4" />
           </button>
-          <div className="text-xs font-semibold text-slate-500 w-12 text-center">
+          <div className="text-xs font-bold text-slate-600 w-10 text-center font-mono">
             {Math.round(scale * 100)}%
           </div>
           <button
             onClick={() => setScale((s) => Math.max(0.35, s - 0.15))}
-            className="p-2 rounded-xl text-slate-600 hover:text-emerald-mint hover:bg-slate-100 transition-all"
+            className="p-1.5 rounded-xl text-slate-600 hover:text-emerald-mint hover:bg-slate-100 transition-all"
             title="Zoom Out"
           >
             <ZoomOut className="w-4 h-4" />
           </button>
-          <div className="w-px h-5 bg-slate-200 mx-1" />
+          <div className="w-px h-4 bg-slate-200 mx-0.5" />
           <button
             onClick={resetFocus}
-            className="p-2 rounded-xl text-slate-600 hover:text-emerald-mint hover:bg-slate-100 transition-all"
-            title="Reset Workspace View"
+            className="p-1.5 rounded-xl text-slate-600 hover:text-emerald-mint hover:bg-slate-100 transition-all"
+            title="Reset Canvas View"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
         </div>
+
+        {/* User Profile Pill */}
+        <div className="flex items-center space-x-2 px-3 py-1.5 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200 shadow-lg">
+          <div
+            className="w-6 h-6 rounded-lg text-white font-bold text-[10px] flex items-center justify-center shrink-0"
+            style={{ backgroundColor: currentRoleObj.color }}
+          >
+            {currentUser?.avatar || 'US'}
+          </div>
+          <span className="text-xs font-bold text-slate-800 hidden sm:inline">{currentUser?.name || 'User'}</span>
+        </div>
+
+        {/* Sign Out Button */}
+        <button
+          onClick={handleSignOut}
+          className="flex items-center space-x-1 px-3 py-2 rounded-2xl bg-white/90 hover:bg-rose-50 backdrop-blur-md border border-rose-200 text-rose-600 text-xs font-bold transition-all shadow-lg"
+          title="Sign Out"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Sign Out</span>
+        </button>
       </div>
 
       {/* Main Canvas Transform Layer */}
@@ -120,151 +157,6 @@ export const SpatialCanvas = ({ children }) => {
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
         }}
       >
-        {/* Animated Data Pipeline Stream Connections (SVG Paths centered at 50% viewport) */}
-        <svg
-          className="absolute pointer-events-none z-0"
-          style={{
-            left: '50%',
-            top: '50%',
-            width: '1px',
-            height: '1px',
-            overflow: 'visible',
-          }}
-        >
-          <defs>
-            <linearGradient id="streamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#059669" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#0F766E" stopOpacity="0.8" />
-            </linearGradient>
-          </defs>
-
-          {/* Stream 1: Onboarding -> Dashboard */}
-          <path
-            d="M -900 -450 C -450 -450, -450 0, 0 0"
-            fill="none"
-            stroke="url(#streamGrad)"
-            strokeWidth="3.5"
-            className="path-stream-animated"
-          />
-
-          {/* Stream 2: Tracker -> Analytics */}
-          <path
-            d="M -900 200 C -450 200, -450 -650, 0 -650"
-            fill="none"
-            stroke="url(#streamGrad)"
-            strokeWidth="3.5"
-            className="path-stream-animated"
-          />
-
-          {/* Stream 3: Analytics -> Optimizer */}
-          <path
-            d="M 0 -650 C 460 -650, 460 200, 920 200"
-            fill="none"
-            stroke="url(#streamGrad)"
-            strokeWidth="3.5"
-            className="path-stream-animated"
-          />
-
-          {/* Stream 4: Dashboard -> Digital Twin */}
-          <path
-            d="M 0 0 C 460 0, 460 -450, 920 -450"
-            fill="none"
-            stroke="url(#streamGrad)"
-            strokeWidth="3.5"
-            className="path-stream-animated"
-          />
-
-          {/* Stream 5: Digital Twin -> Optimizer */}
-          <path
-            d="M 920 -450 C 920 -100, 920 0, 920 200"
-            fill="none"
-            stroke="url(#streamGrad)"
-            strokeWidth="3.5"
-            className="path-stream-animated"
-          />
-
-          {/* Stream 6: Tracker -> Challenges */}
-          <path
-            d="M -900 200 C -900 500, -900 650, -900 840"
-            fill="none"
-            stroke="url(#streamGrad)"
-            strokeWidth="3.5"
-            className="path-stream-animated"
-          />
-
-          {/* Stream 7: Challenges -> Community */}
-          <path
-            d="M -900 840 C -100 840, 100 840, 920 840"
-            fill="none"
-            stroke="url(#streamGrad)"
-            strokeWidth="3.5"
-            className="path-stream-animated"
-          />
-
-          {/* Stream 8: Dashboard -> Assistant */}
-          <path
-            d="M 0 0 C 0 300, 0 450, 0 680"
-            fill="none"
-            stroke="url(#streamGrad)"
-            strokeWidth="3.5"
-            className="path-stream-animated"
-          />
-
-          {/* Stream 9: Settings -> Onboarding */}
-          <path
-            d="M -900 -1050 C -900 -850, -900 -650, -900 -450"
-            fill="none"
-            stroke="url(#streamGrad)"
-            strokeWidth="3"
-            className="path-stream-animated"
-          />
-
-          {/* Stream 10: Admin Sys -> Digital Twin */}
-          <path
-            d="M 920 -1050 C 920 -850, 920 -650, 920 -450"
-            fill="none"
-            stroke="url(#streamGrad)"
-            strokeWidth="3"
-            className="path-stream-animated"
-          />
-
-          {/* Stream 11: Analytics -> Admin Inst */}
-          <path
-            d="M 0 -650 C 0 -900, 0 -1100, 0 -1280"
-            fill="none"
-            stroke="url(#streamGrad)"
-            strokeWidth="3"
-            className="path-stream-animated"
-          />
-
-          {/* Node Connection Points (Glowing Dots) */}
-          {[
-            { x: 0, y: 0 },
-            { x: -900, y: -450 },
-            { x: -900, y: 200 },
-            { x: 0, y: -650 },
-            { x: 920, y: -450 },
-            { x: 920, y: 200 },
-            { x: -900, y: 840 },
-            { x: 0, y: 680 },
-            { x: 920, y: 840 },
-            { x: -900, y: -1050 },
-            { x: 0, y: -1280 },
-            { x: 920, y: -1050 },
-          ].map((pt, idx) => (
-            <circle
-              key={idx}
-              cx={pt.x}
-              cy={pt.y}
-              r="6"
-              fill="#059669"
-              stroke="#FFFFFF"
-              strokeWidth="2"
-            />
-          ))}
-        </svg>
-
-        {/* Floating Cards (Workspace Nodes) */}
         {children}
       </div>
     </div>

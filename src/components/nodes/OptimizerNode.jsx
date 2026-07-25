@@ -16,7 +16,7 @@ export const OptimizerNode = () => {
   return (
     <div className="space-y-6">
       {/* Top Constraint Input Sliders */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
           <div className="flex justify-between text-xs font-bold uppercase text-slate-500">
             <span>Target Monthly Budget</span>
@@ -55,7 +55,7 @@ export const OptimizerNode = () => {
         <label className="block text-xs font-bold uppercase text-slate-500 mb-2">
           Optimization Priority Weight
         </label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {['Carbon First', 'Balanced', 'Cost Savings'].map((p) => (
             <button
               key={p}

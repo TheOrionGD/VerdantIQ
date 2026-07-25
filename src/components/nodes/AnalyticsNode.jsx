@@ -11,7 +11,6 @@ export const AnalyticsNode = () => {
 
   useEffect(() => {
     let isMounted = true;
-    setLoading(true);
     apiService.predictions.getForecasts(range).then((res) => {
       if (isMounted) {
         setForecastData(res.forecastData || []);
@@ -24,7 +23,7 @@ export const AnalyticsNode = () => {
   return (
     <div className="space-y-6">
       {/* Top Header & Range Filters */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-extrabold text-slate-800 flex items-center gap-2">
             <BrainCircuit className="w-4 h-4 text-emerald-mint" /> XGBoost Behavioral Model Forecasts

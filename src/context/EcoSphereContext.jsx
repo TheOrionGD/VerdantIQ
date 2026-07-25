@@ -20,9 +20,81 @@ export const NODE_LAYOUT = {
 };
 
 export const EcoSphereProvider = ({ children }) => {
-  // View Mode State: 'spatial' | 'desktop' | 'mobile'
-  const [viewMode, setViewMode] = useState('spatial');
+  // View Mode State: 'desktop' | 'spatial' | 'mobile'
+  const [viewMode, setViewMode] = useState('desktop');
   const [activeDesktopPage, setActiveDesktopPage] = useState('dashboard');
+
+  // Authentication & Persona State
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem('ecosphere_auth_user');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { /* fallback */ }
+    }
+    return {
+      name: 'Alex Rivera',
+      email: 'alex.rivera@ecosphere.io',
+      role: 'user',
+      avatar: 'AR',
+      title: 'Sustainability Champion',
+      institution: 'Green Household Sector 4',
+    };
+  });
+
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('ecosphere_is_authenticated') === 'true';
+  });
+
+  // RBAC User Role State: 'user' | 'institution_admin' | 'system_admin'
+  const [userRole, setUserRole] = useState(() => {
+    return currentUser?.role || localStorage.getItem('ecosphere_user_role') || 'user';
+  });
+
+  const login = (role, userDetails = {}) => {
+    const roleProfiles = {
+      user: {
+        name: userDetails.name || 'Alex Rivera',
+        email: userDetails.email || 'alex.rivera@ecosphere.io',
+        role: 'user',
+        avatar: 'AR',
+        title: 'Sustainability Champion',
+        institution: 'Green Household Sector 4',
+      },
+      institution_admin: {
+        name: userDetails.name || 'Dr. Aris Thorne',
+        email: userDetails.email || 'a.thorne@campus.edu',
+        role: 'institution_admin',
+        avatar: 'AT',
+        title: 'Campus Sustainability Director',
+        institution: 'Green Horizon University',
+      },
+      system_admin: {
+        name: userDetails.name || 'Elena Rostova',
+        email: userDetails.email || 'e.rostova@admin.ecosphere.io',
+        role: 'system_admin',
+        avatar: 'ER',
+        title: 'Global System Administrator',
+        institution: 'EcoSphere Core Infrastructure',
+      },
+    };
+
+    const userObj = roleProfiles[role] || roleProfiles.user;
+    setCurrentUser(userObj);
+    setUserRole(userObj.role);
+    setIsAuthenticated(true);
+    setViewMode('desktop');
+
+    localStorage.setItem('ecosphere_auth_user', JSON.stringify(userObj));
+    localStorage.setItem('ecosphere_user_role', userObj.role);
+    localStorage.setItem('ecosphere_is_authenticated', 'true');
+
+    showToast(`Signed in as ${userObj.name} (${userObj.title})`, 'success');
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('ecosphere_is_authenticated');
+    showToast('Signed out of EcoSphere platform session.', 'info');
+  };
 
   // Spatial Canvas Transform State (Default 35% matching Spatial Bird's Eye Canvas View)
   const [scale, setScale] = useState(0.35);
@@ -198,6 +270,12 @@ export const EcoSphereProvider = ({ children }) => {
     <EcoSphereContext.Provider
       value={{
         apiService,
+        currentUser,
+        isAuthenticated,
+        login,
+        logout,
+        userRole,
+        setUserRole,
         viewMode,
         setViewMode,
         activeDesktopPage,
