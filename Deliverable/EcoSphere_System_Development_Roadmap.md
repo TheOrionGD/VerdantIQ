@@ -36,7 +36,7 @@ graph TD
 
 ---
 
-## 3. Phase 2: Backend REST Services (Spring Boot 3.x) — PENDING ⏳
+## 3. Phase 2: Backend REST Services (Spring Boot 3.x) — PENDING ⏳(*Do it as you see fit)
 
 ### Target Stack
 - **Framework**: Java 21 + Spring Boot 3.2
