@@ -202,7 +202,7 @@ export const TrackerNode = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase text-slate-500 mb-2">Geotag PostGIS Location</label>
+              <label className="block text-xs font-bold uppercase text-slate-500 mb-2">Geotag MongoDB GeoJSON Location</label>
               <div className="flex items-center space-x-2">
                 <input
                   type="text"
@@ -212,7 +212,7 @@ export const TrackerNode = () => {
                 />
                 <button
                   type="button"
-                  onClick={() => showToast('GPS location updated via PostGIS!', 'info')}
+                  onClick={() => showToast('GPS location updated via MongoDB 2dsphere!', 'info')}
                   className="p-3 rounded-xl bg-forest-teal text-white text-xs font-bold hover:bg-emerald-mint transition-all"
                 >
                   <MapPin className="w-4 h-4" />
@@ -228,7 +228,7 @@ export const TrackerNode = () => {
           className="w-full py-3.5 rounded-2xl bg-emerald-mint text-white font-bold text-sm shadow-md hover:bg-forest-teal transition-all flex items-center justify-center space-x-2"
         >
           <Plus className="w-4 h-4" />
-          <span>Save Log Entry to PostGIS Database</span>
+          <span>Save Log Entry to MongoDB Database</span>
         </button>
       </form>
     </div>

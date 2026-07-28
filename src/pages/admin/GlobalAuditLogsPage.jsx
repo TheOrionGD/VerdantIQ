@@ -12,7 +12,7 @@ export const GlobalAuditLogsPage = () => {
     { id: 'l2', level: 'WARNING', service: 'FASTAPI-ML', action: 'High Inference Latency Alert', user: 'System Worker', time: '25 mins ago', details: 'XGBoost batch prediction exceeded 250ms threshold.' },
     { id: 'l3', level: 'INFO', service: 'RBAC-DESK', action: 'Role Privilege Switch', user: 'alex.rivera@ecosphere.io', time: '42 mins ago', details: 'Switched active role from User to Institution Admin.' },
     { id: 'l4', level: 'INFO', service: 'COMMUNITY-DESK', action: 'Campus Challenge Publication', user: 'admin@greenhorizon.edu', time: '1 hour ago', details: 'Published challenge CC-892 ("Carpool Week").' },
-    { id: 'l5', level: 'WARNING', service: 'REDIS-CACHE', action: 'Cache Eviction Spike', user: 'Redis Worker', time: '3 hours ago', details: 'Flushed 420 spatial key keys due to memory limit policy.' },
+    { id: 'l5', level: 'WARNING', service: 'MONGODB-STORE', action: 'Spatial Index Maintenance', user: 'MongoDB Worker', time: '3 hours ago', details: 'Reindexed 420 GeoJSON geospatial documents for optimal query performance.' },
   ]);
 
   const filteredLogs = logs.filter(l => {

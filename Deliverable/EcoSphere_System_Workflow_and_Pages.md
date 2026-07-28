@@ -2,9 +2,13 @@
 
 EcoSphere (VerdantIQ) is a machine learning-driven Environmental Decision Support and Sustainability Intelligence Platform. This document outlines the end-to-end operational workflows of the system and details the application's pages, features, interactive actions, and underlying system behaviors.
 
+> [!NOTE]
+> **Implementation Status (Phases 0–10 Completed ✅)**:
+> All core workflows described below are backed by working microservice endpoints across Spring Boot (`:8080`), FastAPI (`:8000`), MongoDB 2dsphere, MinIO S3, Google OR-Tools MILP Solver, Groq LLM Gateway, real-time SSE notification stream (`/api/v1/notifications/stream`), and pre-shaped chart telemetry services.
+
 ---
  
-## 1. System Roles and Access Control
+## 1. System Roles and Access Control (Spring Security RBAC — Built ✅)
 
 To support institutional, community, and individual usage, the system defines three primary roles:
 
@@ -32,7 +36,7 @@ graph TD
     User -->|2. Log Activity| Log[Activity Tracker Page]
     
     %% Data Tier
-    Log -->|Store Metrics| DB[(PostgreSQL & PostGIS Database)]
+    Log -->|Store Metrics| DB[(MongoDB Document Store)]
     Log -->|Upload Evidence| S3[(MinIO / S3 Object Storage)]
     
     %% Machine Learning & Optimization Services
@@ -61,19 +65,19 @@ graph TD
 #### Workflow 1: User Onboarding and Digital Twin Initialization
 1. The user registers an account and fills out an initial questionnaire (number of household members, appliances in use, standard commute modes, average utility bills).
 2. The React client submits this payload to the Spring Boot REST API.
-3. Spring Boot writes the profile details to PostgreSQL and initializes the baseline **Household Digital Twin** structure.
+3. Spring Boot writes the profile details to MongoDB and initializes the baseline **Household Digital Twin** structure.
 4. The system calculates an initial baseline carbon footprint score to serve as a benchmark.
 
 #### Workflow 2: Daily Activity Tracking & Logging
 1. The user navigates to the tracker and inputs resource usage (e.g., electricity kWh, transport mileage, water volume, waste weights).
-2. The user can optionally upload an image (e.g., utility bill or waste segregation photo) to PostgreSQL/S3.
+2. The user can optionally upload an image (e.g., utility bill or waste segregation photo) to S3 (with file reference saved in MongoDB).
 3. The React app performs client-side validation and dispatches the log to Spring Boot.
 4. Spring Boot persists the log entry and triggers asynchronous analytics updates.
 
 #### Workflow 3: Behavioral Pattern Learning & Forecasting (ML Pipeline)
 1. Every evening, the FastAPI microservice runs background routines to analyze user logging patterns.
 2. An XGBoost model trains on historical utility logs to forecast energy, water, and transport consumption for the upcoming week and month.
-3. The output predictions are stored in a Redis cache for sub-second retrieval times on the user dashboard.
+3. The output predictions are stored in MongoDB for fast retrieval times on the user dashboard.
 
 #### Workflow 4: Sustainability Optimization & Simulation
 1. The user navigates to the Optimizer page and sets optimization parameters (e.g., "Reduce carbon footprint by 15% under a budget of ₹1,500").
@@ -84,7 +88,7 @@ graph TD
 #### Workflow 5: Eco Challenge Completion and Evidence Verification
 1. The user joins a local sustainability challenge (e.g., "Cycle 15 km this week" or "Log 100% waste segregation").
 2. Upon completing the challenge, the user uploads evidence (e.g., GPS track image, photos of segregated bins, or scans a location QR code).
-3. The Spring Boot backend checks the uploaded file's EXIF metadata to verify matching geolocations (via PostGIS) and timestamps.
+3. The Spring Boot backend checks the uploaded file's EXIF metadata to verify matching geolocations (via MongoDB 2dsphere spatial index) and timestamps.
 4. For community challenges, the evidence goes to the Institution Admin's verification queue. Once approved, rewards are disbursed and leaderboards update dynamically.
 
 ---
@@ -93,23 +97,18 @@ graph TD
 
 Below is the detailed specification of all planned application pages, listing their features, interactive actions, and behind-the-scenes system behavior.
 
----
-
-### Page 1: Onboarding & Carbon Profiling Wizard (`/onboarding`)
-*   **Purpose**: Register new users, establish their sustainability baselines, and initialize their household digital twins.
+### Page 1: User Onboarding & Profiling Wizard (`/onboarding`)
+*   **Purpose**: Guide new users through initial household baseline configuration.
 *   **UI Components & Features**:
-    *   Dynamic multi-step form progress tracker.
-    *   Form widgets for household size, appliances count, energy billing info, dietary habits, and typical transport modes.
-    *   Visual representation of the user's estimated initial carbon score comparison against national averages.
+    *   Multi-step form wizard: Household Size, Housing Type, Appliance Matrix, Commute Patterns, Regional Utility Inputs.
+    *   Dynamic Baseline Preview Card updating on the fly as selections change.
 *   **Interactive Actions**:
     *   `Next / Previous`: Navigate form steps with validation.
     *   `Calculate Baseline`: Submits questionnaires to backend.
     *   `Submit`: Completes registration, redirects to dashboard.
 *   **System Behavior (Under-the-Hood)**:
     *   Spring Boot receives profile questionnaire, parses parameters, and uses built-in conversion algorithms to compute initial footprint bounds.
-    *   Creates a new household digital twin configuration record in PostgreSQL.
-
----
+    *   Creates a new household digital twin configuration record in MongoDB.
 
 ### Page 2: Personal Sustainability Dashboard (`/dashboard`)
 *   **Purpose**: The central command center showing current sustainability status, quick logs, notifications, and AI assistant alerts.
@@ -123,28 +122,23 @@ Below is the detailed specification of all planned application pages, listing th
     *   `Dismiss Alert`: Hides an alert, teaching the system user preference.
     *   `View Analytics`: Redirects the user to the details panel for that specific resource.
 *   **System Behavior (Under-the-Hood)**:
-    *   Fetches cached scores from Redis for optimal performance.
+    *   Fetches cached scores from MongoDB aggregation pipeline for optimal performance.
     *   Invokes the FastAPI recommendation ranker to prioritize tips shown in the dashboard sidebar based on user logs.
-
----
 
 ### Page 3: Daily Activity Tracker (`/tracker`)
 *   **Purpose**: Allow manual data entry for all environmental actions and utility usage.
 *   **UI Components & Features**:
     *   Categorized tabs: `[Transport]`, `[Electricity]`, `[Water]`, `[Waste]`, `[Tree Planting]`.
     *   Electricity/Water: Numerical inputs (kWh, gallons) or file upload area for utility bills.
-    *   Transport: Map route picker or dropdown selection of vehicles (Electric car, Hybrid car, Gasoline, Bus, Bike, Walk) and distances.
-    *   Waste: Scale weights or count sliders for Plastic, Organic, Paper, and Glass.
-    *   Tree Planting: Form for sapling name, photo attachment, and auto-geolocation fetch.
+    *   Transport: Commute mode selector, distance slider, and vehicle fuel type.
+    *   Tree Planting: Geotagging button to drop GPS pins on trees planted.
 *   **Interactive Actions**:
     *   `Upload Bill Document`: Extracts text using OCR APIs (or stores for admin auditing).
     *   `Fetch Current Location`: Requests browser location permission to pin coordinates.
     *   `Log Entry`: Submits form data to the backend.
 *   **System Behavior (Under-the-Hood)**:
     *   Calculates carbon footprint additions on-the-fly based on conversion coefficients.
-    *   Stores geolocations in PostgreSQL using PostGIS geometry columns to support spatial queries.
-
----
+    *   Stores geolocations in MongoDB using GeoJSON 2dsphere geometry objects to support spatial queries.
 
 ### Page 4: Behavioral Predictions & Analytics (`/analytics`)
 *   **Purpose**: Display ML-driven predictive dashboards and explainable resource forecasts.
@@ -153,50 +147,41 @@ Below is the detailed specification of all planned application pages, listing th
     *   **Trend Highlights**: Text cards summarizing behavioral predictions (e.g., "Electricity usage predicted to spike by 15% next weekend due to temperature patterns").
     *   **Explainable AI Section**: Generative explanations on why scores changed and what factors influenced predictions.
 *   **Interactive Actions**:
-    *   `Toggle Range`: Filter graphs between 7 Days, 30 Days, or 6 Months.
-    *   `Ask AI 'Why?'`: Opens dialog explaining specific consumption anomalies in normal text.
-    *   `Export Data`: Generates CSV/Excel files of historical logs.
+    *   `Change Resource Filter`: Switch between Water, Energy, Transport, Waste forecasts.
+    *   `Trigger Model Re-run`: Request fresh inference from FastAPI for real-time adjustments.
 *   **System Behavior (Under-the-Hood)**:
-    *   Spring Boot queries the FastAPI service for forecasted curves. FastAPI feeds historical logs into XGBoost models trained on this user's data.
-    *   The GenAI layer combines model outputs and prompt templates to generate context-rich natural language explanations of the predicted anomalies.
+    *   Queries FastAPI ML endpoint for prediction arrays.
+    *   Calls Groq AI API to convert raw XGBoost anomaly flags into human-readable suggestions.
 
----
-
-### Page 5: Household Digital Twin & Simulation Lab (`/digital-twin`)
-*   **Purpose**: Run virtual sustainability experiments to evaluate potential household upgrades.
+### Page 5: Household Digital Twin Simulation Lab (`/digital-twin`)
+*   **Purpose**: Provide a virtual interactive model of the user's home to simulate the impact of sustainability upgrades before purchase.
 *   **UI Components & Features**:
-    *   Interactive floorplan schematic showing appliances, power sources, water systems.
-    *   **Upgrade Library Panel**: List of simulated items (e.g., Solar Panel installation, LED Bulb conversion, Rainwater Harvester, Smart Thermostats).
-    *   **Scenario Comparison Table**: Real-time evaluation dashboard showing: Est. Cost, Expected Carbon Offset, Water Saved, and ROI (Months).
+    *   3D / Iso-Style interactive house layout visualizer.
+    *   **Upgrade Matrix**: Checkboxes for virtual upgrades (e.g., "Install Solar Panels", "Upgrade HVAC to Heat Pump", "Switch to LED Lighting", "Double-Glazed Windows").
+    *   **Simulated Savings Counter**: Displays projected annual CO₂ reduction and monetary savings in real-time.
 *   **Interactive Actions**:
-    *   `Add/Remove Upgrade`: Drags an upgrade into the active household simulator.
-    *   `Configure Parameter`: Edits specific upgrade properties (e.g., square footage of solar panels).
-    *   `Run Simulation`: Computes the hypothetical twin outcome.
-    *   `Generate Comparative Report`: Requests the AI assistant to summarize the best financial-ecological path.
+    *   `Toggle Upgrade`: Dynamically recalculates digital twin baseline metrics.
+    *   `Apply to Action Plan`: Transfers selected upgrades into the Google OR-Tools Optimizer.
 *   **System Behavior (Under-the-Hood)**:
-    *   The digital twin simulator runs model calculations based on household properties.
-    *   Uses mathematical coefficients scaled to the user's localized weather history (OpenWeather API integration) to predict solar output and rainwater collection rates.
+    *   Spring Boot retrieves digital twin parameters and sends simulation coefficients to FastAPI to re-evaluate household resource draw models.
 
----
-
-### Page 6: Cross-Domain Optimization Engine (`/optimizer`)
-*   **Purpose**: Find the best multi-resource saving strategy within budget and priority constraints.
+### Page 6: Cross-Domain Decision Optimizer (`/optimizer`)
+*   **Purpose**: Solve multi-objective constraint problems to help users achieve maximum environmental impact within a specific financial budget.
 *   **UI Components & Features**:
-    *   **Constraint Form**: Sliders to set target monthly sustainability budget, energy reductions, and water targets.
-    *   **Priority Toggles**: Weight sliders for carbon minimization, financial cost savings, and convenience.
-    *   **Optimized Plan Display**: An automated, chronological action plan generated by the optimizer.
+    *   **Goal Configuration Panel**: Input fields for Target Carbon Offset (kg CO₂) and Maximum Budget ($ / ₹).
+    *   **Priority Sliders**: Adjust relative weights (Cost Savings vs. Carbon Reduction vs. Effort Level).
+    *   **Recommended Strategy Roadmap**: Chronological step-by-step action plan generated by Google OR-Tools.
 *   **Interactive Actions**:
-    *   `Configure Priorities`: Adjust parameters and click "Generate Optimal Strategy".
-    *   `Accept & Apply Plan`: Automatically converts optimized strategies into active personal goals in the Goal Planner.
+    *   `Solve Plan`: Sends user budget constraints to the FastAPI OR-Tools MILP solver.
+    *   `Adopt Strategy`: Saves recommended actions into the user's active goals list.
 *   **System Behavior (Under-the-Hood)**:
-    *   Invokes Google OR-Tools on the FastAPI server, executing mixed-integer linear programming (MILP) to find the optimal combination of behavioral adjustments and hardware upgrades under constraints.
-    *   Outputs are saved to the user's profile database.
+    *   FastAPI runs Mixed-Integer Linear Programming (MILP) algorithms to compute optimal decision tradeoffs.
 
----
-
-### Page 7: Eco Challenges & Verification Portal (`/challenges`)
-*   **Purpose**: Community-building page for users to compete in sustainability challenges and upload proof of completion.
+### Page 7: Community & Institutional Portal (`/community`)
+*   **Purpose**: Enable campus/institutional environmental collaboration, public leaderboards, and group pledges.
 *   **UI Components & Features**:
+    *   **Institution Selector**: Dropdown to view data for specific universities, corporate offices, or city zones.
+    *   **Aggregate Impact Metrics**: Total CO₂ saved by community, trees planted, and water conserved.
     *   **Available Challenges**: Grid of active cards (e.g., "Commute green for 5 consecutive days").
     *   **Individual & Group Leaderboards**: Ranks users and institutions based on points.
     *   **Verification Upload Console**: Form to select the challenge, input notes, upload image, or scan a location QR code.
@@ -207,9 +192,7 @@ Below is the detailed specification of all planned application pages, listing th
 *   **System Behavior (Under-the-Hood)**:
     *   Spring Boot reads the uploaded image's EXIF data to verify that the timestamp and location match the challenge criteria.
     *   For institution-only challenges, it pushes the verification request into the queue of the Institution Admin.
-    *   Distributes points and updates Postgres leaderboard tables upon approval.
-
----
+    *   Distributes points and updates MongoDB leaderboard collections upon approval.
 
 ### Page 8: AI Environmental Decision Assistant (`/assistant`)
 *   **Purpose**: Provide a conversational chatbot that assists with sustainability decisions and explains environmental impacts.
@@ -218,14 +201,6 @@ Below is the detailed specification of all planned application pages, listing th
     *   **Quick Query Chips**: One-click queries like "Which plastics can I recycle?", "Compare bicycle vs. train commute footprint for 20km".
     *   **Inline Chart Previews**: Renders charts directly within the chat window when explaining predictions.
 *   **Interactive Actions**:
-    *   `Send Message`: Sends user query.
-    *   `Click Query Chip`: Immediately triggers a pre-set request.
-    *   `Export Conversation`: Prints chat log.
-*   **System Behavior (Under-the-Hood)**:
-    *   Spring Boot routes queries to the OpenAI/Groq API, supplying a comprehensive context system prompt containing the user's current environmental stats, localized weather/AQI details, and platform capability schemas.
-
----
-
 ### Page 9: Community & Institutional Portal (`/community`)
 *   **Purpose**: Provide transparency, reports, and rankings for organizations like universities or corporations.
 *   **UI Components & Features**:
@@ -273,12 +248,12 @@ Below is the detailed specification of all planned application pages, listing th
 ### Page 12: System Admin Console (`/admin/system`)
 *   **Purpose**: Oversee global system configuration, model performance, and API consumption logs.
 *   **UI Components & Features**:
-    *   **System Health Telemetry**: CPU, memory, database connection pools, Redis latency statistics.
+    *   **System Health Telemetry**: CPU, memory, database connection pools, MongoDB latency statistics.
     *   **ML Model Telemetry Panel**: Lists scikit-learn and XGBoost model version statistics, average error rates, and last retraining times.
     *   **Global Variables Editor**: Editable matrix of environmental coefficients (e.g., kg of CO₂ per kWh of grid energy, per liter of gas, etc.).
 *   **Interactive Actions**:
     *   `Trigger Model Re-training`: Forces FastAPI to fetch updated user history and run retraining routines.
-    *   `Update Emission Factors`: Edits conversion parameters and flushes Redis caches to recalculate carbon metrics.
+    *   `Update Emission Factors`: Edits conversion parameters and updates MongoDB document coefficients to recalculate carbon metrics.
 *   **System Behavior (Under-the-Hood)**:
     *   Spring Boot calls scheduler jobs or sends asynchronous commands via FastAPI REST API to start model training operations.
 

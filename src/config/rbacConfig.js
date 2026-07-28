@@ -181,7 +181,7 @@ export const ROLE_NAVIGATION = {
       id: 'sys-database',
       path: '/admin/database',
       label: 'Database & Storage Desk',
-      shortLabel: 'Database & PostGIS',
+      shortLabel: 'Database & MongoDB',
       icon: Database,
       category: 'Data Infrastructure',
       nodeId: 'adminSys',

@@ -531,19 +531,17 @@ I would aim for a **production-style but feasible final-year project**. There's 
 
 | Technology      | Purpose                                            |
 | --------------- | -------------------------------------------------- |
-| PostgreSQL      | Primary relational database                        |
-| Redis           | Caching predictions, sessions, dashboards          |
+| MongoDB         | Primary document database for logs, twins, & spatial data |
 | MinIO or AWS S3 | Storage for uploaded images, reports, and evidence |
 
-**Why PostgreSQL instead of MySQL?**
+**Why MongoDB?**
 
-PostgreSQL has stronger support for:
+MongoDB provides native document storage, flexible BSON schemas, and 2dsphere geospatial indexing:
 
-* JSON data
-* Geospatial extensions (PostGIS)
-* Complex analytical queries
+* Flexible JSON/BSON document structure ideal for dynamic carbon activity logs and digital twin states
+* Native 2dsphere geospatial indexing for campus geofences and geotagged entries
+* High-performance aggregation pipeline for environmental analytics
 
-These are useful for environmental data and future expansion.
 
 ---
 
@@ -673,7 +671,7 @@ Roles:
 
 | Technology       | Purpose             |
 | ---------------- | ------------------- |
-| Docker           | Containerization    |
+| MongoDB Atlas    | Cloud document database hosting |
 | Railway / Render | Application hosting |
 | GitHub Actions   | CI/CD automation    |
 
@@ -700,8 +698,12 @@ Roles:
                 Spring Boot REST API
                            │
         ┌──────────────────┼──────────────────┐
-        ▼                  ▼                  ▼
- PostgreSQL            Redis Cache      Object Storage
+        ▼                                     ▼
+     MongoDB                               Object Storage
+  (Atlas / Local)                             │
+        │                                     │
+        ▼                                     │
+   ML Service (FastAPI) ──────────────────────┘
                            │
                            ▼
                   ML Service (FastAPI)
@@ -739,14 +741,12 @@ Behavior Learning   Prediction Engine   Optimization Engine
 * Spring Boot 3
 * Spring Security
 * JWT
-* Spring Data JPA
-* Hibernate
+* Spring Data MongoDB
 * Maven
 
 ### Database & Storage
 
-* PostgreSQL
-* Redis
+* MongoDB (Document Store & 2dsphere Spatial Indexing)
 * MinIO (or AWS S3)
 
 ### Machine Learning
@@ -780,21 +780,20 @@ Behavior Learning   Prediction Engine   Optimization Engine
 
 ### DevOps & Deployment
 
-* Docker
 * GitHub Actions
-* Railway or Render
+* Railway or Render / Vercel
 
 ## Feasibility Assessment
 
 For a **4-member final-year team**, I would estimate this stack as:
 
 * **Technical feasibility:** **9/10** — Each component is mature, well-documented, and integrates cleanly.
-* **Learning curve:** **7.5/10** — You'll need to learn some new tools (FastAPI, OR-Tools, PostgreSQL), but they're manageable.
+* **Learning curve:** **7.5/10** — You'll need to learn some new tools (FastAPI, OR-Tools, MongoDB), but they're manageable.
 * **Implementation feasibility (one semester):** **8.5/10** — If you prioritize core features first and treat advanced capabilities (e.g., digital twin or adaptive intervention engine) as incremental additions, this is a realistic and professionally structured architecture.
 
 | Team Member           | Role                                                      | Responsibilities                                                                                                                                                                                                      |
 | --------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Gangash12**         | **UI/UX Engineer & Frontend Developer**                   | Design the UI/UX, develop frontend pages, implement responsive interfaces, dashboards, charts, forms, and ensure a smooth user experience.                                                                            |
+| **Gangash**         | **UI/UX Engineer & Frontend Developer**                   | Design the UI/UX, develop frontend pages, implement responsive interfaces, dashboards, charts, forms, and ensure a smooth user experience.                                                                            |
 | **Girijesh**          | **Software Developer & Tester**                           | Develop assigned application modules, assist in implementation, perform functional testing, integration testing, bug fixing, and quality assurance.                                                                   |
 | **Grish Narayanan S** | **Solution Architect & Backend Developer (Project Lead)** | Design the overall system architecture, develop backend services and REST APIs, design and manage the database, integrate ML/AI components, oversee technical decisions, and lead the project's software development. |
 | **Godfrey**           | **Integration Support**                                   | Support frontend–backend integration, assist with AI/ML integration, help resolve integration issues, contribute to documentation, version control, deployment, and provide technical support wherever needed.        |

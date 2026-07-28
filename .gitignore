@@ -1,11 +1,16 @@
-# ==========================================
-# EcoSphere Workspace Custom Ignores
-# ==========================================
-/ui-ux-pro-max-skill
+# ==============================================================================
+# EcoSphere (VerdantIQ) — Master Unified System .gitignore
+# ==============================================================================
+# Covers all microservices, tech stack layers, tools, and platforms:
+#   1. React Spatial UI & Node.js (Root)
+#   2. Spring Boot 3.2 Core Backend (Java 21 / Gradle)
+#   3. FastAPI ML & Optimization Engine (Python 3.11 / Pytest)
+#   4. Environment Secrets, OS, IDEs & Agent Local Caches
+# ==============================================================================
 
-# ==========================================
-# Environment Variables & Secrets
-# ==========================================
+# ------------------------------------------------------------------------------
+# 1. Environment Variables & Secrets
+# ------------------------------------------------------------------------------
 .env
 .env.local
 .env.development.local
@@ -14,15 +19,22 @@
 *.env
 !.env.example
 
-# ==========================================
-# Node / NPM / Yarn / pnpm
-# ==========================================
+# ------------------------------------------------------------------------------
+# 2. Node.js, Frontend & Bundler Artifacts (Vite / React)
+# ------------------------------------------------------------------------------
 node_modules/
 jspm_packages/
 .npm
 .eslintcache
 .stylelintcache
 .tsbuildinfo
+dist/
+dist-ssr/
+build/
+out/
+.vite/
+.cache/
+.parcel-cache/
 
 # Logs
 logs
@@ -32,29 +44,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
-# Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-# ==========================================
-# Build & Distribution Outputs
-# ==========================================
-dist/
-dist-ssr/
-build/
-out/
-*.bundle.js
-
-# ==========================================
-# Vite & Bundler Caches
-# ==========================================
-.vite/
-.cache/
-.parcel-cache/
-
-# ==========================================
-# Testing & Code Coverage
-# ==========================================
+# Frontend Testing
 coverage/
 .nyc_output/
 cypress/screenshots/
@@ -62,18 +54,100 @@ cypress/videos/
 playwright-report/
 test-results/
 
-# ==========================================
-# Operating System Files
-# ==========================================
-# macOS
+# ------------------------------------------------------------------------------
+# 3. Java & Gradle Backend (Spring Boot Core)
+# ------------------------------------------------------------------------------
+.gradle/
+backend/.gradle/
+backend/build/
+!**/gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Eclipse / STS / NetBeans Artifacts
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+
+# ------------------------------------------------------------------------------
+# 4. Python & FastAPI ML Microservice (FastAPI / XGBoost / Pytest)
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+ml-service/__pycache__/
+ml-service/app/__pycache__/
+ml-service/tests/__pycache__/
+
+# Python Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+ml-service/venv/
+ml-service/.venv/
+
+# Python Distribution, Packaging & Build
+develop-eggs/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Python Testing & Coverage
+.pytest_cache/
+ml-service/.pytest_cache/
+.coverage
+htmlcov/
+
+# ------------------------------------------------------------------------------
+# 5. IDEs, Code Editors & OS System Files
+# ------------------------------------------------------------------------------
+# JetBrains (IntelliJ IDEA, PyCharm, WebStorm)
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Sublime Text & Visual Studio
+*.sublime-workspace
+*.sublime-project
+.vs/
+*.suo
+*.user
+*.sln.docstates
+
+# Operating System Caches (macOS, Windows, Linux)
 .DS_Store
 .AppleDouble
 .LSOverride
 ._*
 .Spotlight-V100
 .Trashes
-
-# Windows
 Thumbs.db
 Thumbs.db:encryptable
 ehthumbs.db
@@ -85,41 +159,13 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
-
-# Linux
 *~
 .fuse_hidden*
 .directory
 .trash
 
-# ==========================================
-# IDEs & Code Editors
-# ==========================================
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
-
-# JetBrains (WebStorm, IntelliJ, PyCharm, etc.)
-.idea/
-*.iws
-*.iml
-*.ipr
-
-# Sublime Text
-*.sublime-workspace
-*.sublime-project
-
-# Visual Studio
-.vs/
-*.suo
-*.user
-*.sln.docstates
-
-# ==========================================
-# AI Agent & Local Caches
-# ==========================================
+# ------------------------------------------------------------------------------
+# 6. AI Assistants, Local Agent Caches & Workspace Utilities
+# ------------------------------------------------------------------------------
 .gemini/
+/ui-ux-pro-max-skill

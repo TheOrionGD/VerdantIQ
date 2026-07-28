@@ -12,7 +12,7 @@ export const MLModelTelemetryPage = () => {
           </span>
           <h2 className="text-2xl font-black tracking-tight mt-2">ML Model & System Telemetry</h2>
           <p className="text-xs text-purple-200 max-w-xl mt-1">
-            Monitor XGBoost prediction RMSE, Redis cache latency, PostGIS spatial query speeds, and trigger microservice retraining pipelines.
+            Monitor XGBoost prediction RMSE, MongoDB document query latency, 2dsphere spatial query speeds, and trigger microservice retraining pipelines.
           </p>
         </div>
 

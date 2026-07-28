@@ -8,8 +8,8 @@ export const SystemAdminNode = () => {
   const [co2PerKwh, setCo2PerKwh] = useState(0.82);
   const [co2PerLiterGas, setCo2PerLiterGas] = useState(2.31);
   const [telemetry, setTelemetry] = useState({
-    redisLatencyMs: 2.4,
-    postGisQueryMs: 12,
+    mongoDbLatencyMs: 2.4,
+    mongoQueryMs: 12,
     xgboostRmse: 0.042,
     uptimePercentage: 99.98,
   });
@@ -27,7 +27,7 @@ export const SystemAdminNode = () => {
     showToast('FastAPI ML Retraining pipeline initialized...', 'info');
     apiService.predictions.triggerModelRetraining().then(() => {
       setIsTraining(false);
-      showToast('XGBoost model retrained! Redis cache flushed & updated.', 'success');
+      showToast('XGBoost model retrained! MongoDB collections updated.', 'success');
     });
   };
 
@@ -36,13 +36,13 @@ export const SystemAdminNode = () => {
       {/* Telemetry Status Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
         <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm">
-          <div className="text-[10px] font-bold text-slate-400 uppercase">Redis Latency</div>
-          <div className="text-xl font-black text-emerald-mint mt-1">{telemetry.redisLatencyMs} ms</div>
+          <div className="text-[10px] font-bold text-slate-400 uppercase">MongoDB Latency</div>
+          <div className="text-xl font-black text-emerald-mint mt-1">{telemetry.mongoDbLatencyMs || 2.4} ms</div>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm">
-          <div className="text-[10px] font-bold text-slate-400 uppercase">PostGIS Spatial Query</div>
-          <div className="text-xl font-black text-forest-teal mt-1">{telemetry.postGisQueryMs} ms</div>
+          <div className="text-[10px] font-bold text-slate-400 uppercase">MongoDB 2dsphere Query</div>
+          <div className="text-xl font-black text-forest-teal mt-1">{telemetry.mongoQueryMs || 12} ms</div>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm">

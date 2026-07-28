@@ -1,0 +1,196 @@
+================================================================================
+VERDANTIQ (ECOSPHERE) - SPRING BOOT BACKEND DEPENDENCIES GUIDE
+================================================================================
+
+1. DO YOU NEED TO INSTALL SPRING BOOT DEPENDENCIES IN THIS FRONTEND REPO?
+--------------------------------------------------------------------------------
+ANSWER: NO.
+
+- This root project directory (VerdantIQ) is a Node.js / React (Vite) FRONTEND.
+- Node.js uses `npm` packages defined in `package.json`.
+- Spring Boot is a JAVA framework. Java dependencies CANNOT be installed in `package.json`.
+- Your React frontend interacts with Spring Boot via HTTP REST API calls (using fetch/axios).
+
+
+2. WHERE DO SPRING BOOT DEPENDENCIES GO?
+--------------------------------------------------------------------------------
+- Spring Boot dependencies are declared inside a separate Java backend project 
+  (e.g., in a `./backend` directory or a separate Git repository).
+- Java dependencies are managed using Maven (`pom.xml`) or Gradle (`build.gradle`).
+
+
+3. REQUIRED SPRING BOOT DEPENDENCIES FOR VERDANTIQ (MONGODB BACKEND)
+--------------------------------------------------------------------------------
+When setting up your Spring Boot project (for example, via start.spring.io),
+here are the standard dependencies to include for a project like VerdantIQ:
+
++----------------------+---------------------------------------+------------------------+----------------------------------------------------------------------------------+
+| Dependency           | Starter / Artifact Name               | On start.spring.io?    | Purpose                                                                          |
++----------------------+---------------------------------------+------------------------+----------------------------------------------------------------------------------+
+| Spring Web           | spring-boot-starter-web               | YES                    | Builds RESTful APIs and handles HTTP requests (@RestController).                 |
+| Spring Data MongoDB  | spring-boot-starter-data-mongodb      | YES                    | Document database mapping (@Document), 2dsphere indexing, and aggregations.      |
+| Spring Security      | spring-boot-starter-security          | YES                    | Authentication & authorization framework.                                        |
+| JJWT (Java JWT)      | io.jsonwebtoken:jjwt-api              | NO (Add in pom.xml)    | Issuing and validating JWT bearer tokens for secure user access.                 |
+| Lombok               | lombok                                | YES                    | Reduces boilerplate Java code (@Getter, @Setter, @NoArgsConstructor).            |
+| Spring Boot DevTools | spring-boot-devtools                  | YES                    | Hot reload and rapid development feedback.                                       |
+| Springdoc OpenAPI    | springdoc-openapi-starter-webmvc-ui   | NO (Add in pom.xml)    | Auto-generates interactive Swagger API documentation at /swagger-ui.html.        |
++----------------------+---------------------------------------+------------------------+----------------------------------------------------------------------------------+
+
+Detailed Overview:
+
+[Core REST & Web APIs]
+  - Spring Web (spring-boot-starter-web)
+    Provides REST controllers, embedded Tomcat server, and HTTP request handling.
+
+[Database & Persistence]
+  - Spring Data MongoDB (spring-boot-starter-data-mongodb)
+    Provides document mapping (@Document), MongoDB repositories, GeoJSON 2dsphere
+    spatial query support, and MongoTemplate for aggregation pipelines.
+
+[Security & Authentication]
+  - Spring Security (spring-boot-starter-security)
+    Provides request authorization filters and role-based access control.
+  - JJWT / Java JWT (io.jsonwebtoken:jjwt-api, jjwt-impl, jjwt-jackson)
+    Used for issuing and validating JWT access tokens.
+
+[Developer Utility & Boilerplate Reduction]
+  - Lombok (lombok)
+    Eliminates getter/setter/constructor boilerplate via annotations.
+  - Spring Boot DevTools (spring-boot-devtools)
+    Enables automatic application restart on code changes.
+
+[API Documentation]
+  - Springdoc OpenAPI / Swagger UI (springdoc-openapi-starter-webmvc-ui)
+    Generates interactive Swagger API docs at /swagger-ui.html.
+
+
+4. SAMPLE MAVEN `pom.xml` DEPENDENCIES BLOCK
+--------------------------------------------------------------------------------
+<dependencies>
+    <!-- Spring Web -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- Spring Data MongoDB (Document Store & GeoJSON 2dsphere) -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-mongodb</artifactId>
+    </dependency>
+
+    <!-- Spring Security -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <!-- JWT Security Tokens -->
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>0.12.5</version>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>0.12.5</version>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>0.12.5</version>
+        <scope>runtime</scope>
+    </dependency>
+
+    <!-- Lombok -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+
+    <!-- Spring Boot DevTools -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+        <scope>runtime</scope>
+        <optional>true</optional>
+    </dependency>
+
+    <!-- Swagger OpenAPI UI -->
+    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>2.5.0</version>
+    </dependency>
+
+    <!-- Spring Boot Test -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+
+
+5. MONGODB APPLICATION CONFIGURATION (`application.yml` vs `application.properties`)
+--------------------------------------------------------------------------------
+RECOMMENDATION: Use `application.yml` (YAML format).
+Why YAML? It is cleaner, easier to read, avoids repeating prefixes, and handles nested settings (MongoDB, JWT, Logging) much better.
+
+=== OPTION A: application.yml (RECOMMENDED - ALL SECRETS FROM .ENV) ===
+
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: verdantiq-backend
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION_MS:86400000}
+
+
+=== OPTION B: application.properties (ALL SECRETS FROM .ENV) ===
+
+# Server Port
+server.port=${PORT:8080}
+
+# Application Name
+spring.application.name=verdantiq-backend
+
+# MongoDB Connection String
+spring.data.mongodb.uri=${MONGODB_URI}
+
+# JWT Token Settings
+jwt.secret=${JWT_SECRET}
+jwt.expiration=${JWT_EXPIRATION_MS:86400000}
+
+
+6. HOW TO BOOTSTRAP YOUR SPRING BOOT PROJECT (2-STEP GUIDE)
+--------------------------------------------------------------------------------
+STEP 1: Generate Base Project on https://start.spring.io/
+  - Project: Maven (or Gradle)
+  - Language: Java (Version 17 or 21)
+  - Group: com.verdantiq (or com.ecosphere)
+  - Artifact: backend
+  - Add Dependencies on start.spring.io:
+      1. Spring Web
+      2. Spring Data MongoDB
+      3. Spring Security
+      4. Lombok
+      5. Spring Boot DevTools
+  - Click "Generate" -> Download ZIP -> Extract into your backend directory.
+
+STEP 2: Add JJWT & Swagger to `pom.xml` (Manual Step)
+  - Open `pom.xml` in your IDE.
+  - Copy and paste the JJWT (<dependency>io.jsonwebtoken:jjwt-api...</dependency>) 
+    and Springdoc OpenAPI blocks from Section 4 of this guide into your <dependencies> tag.
+  - Re-sync Maven in your IDE (IntelliJ / Eclipse / VS Code).
+================================================================================

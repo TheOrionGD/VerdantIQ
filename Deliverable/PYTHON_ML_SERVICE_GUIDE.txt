@@ -1,0 +1,65 @@
+================================================================================
+VERDANTIQ (ECOSPHERE) - PYTHON FASTAPI ML MICROSERVICE GUIDE
+================================================================================
+
+1. WHAT IS THE PURPOSE OF THE PYTHON SERVICE?
+--------------------------------------------------------------------------------
+The Python service lives in `./ml-service/` and runs on PORT 8000.
+It handles:
+  - XGBoost Behavioral Consumption Forecasting (`/api/v1/ml/forecasts`)
+  - Scikit-learn Anomaly Detection & Explainable AI (`/api/v1/ml/explain`)
+  - Google OR-Tools MILP Constraint Solver (`/api/v1/optimizer/solve`)
+  - Model Retraining Pipeline (`/api/v1/ml/retrain`)
+
+
+2. REQUIRED PYTHON DEPENDENCIES (in ml-service/requirements.txt)
+--------------------------------------------------------------------------------
++----------------------+--------------------------+-------------------------------------------------------------------------+
+| Library              | Version                  | Purpose                                                                 |
++----------------------+--------------------------+-------------------------------------------------------------------------+
+| FastAPI              | fastapi>=0.111.0         | High-performance web framework for building REST APIs.                 |
+| Uvicorn              | uvicorn[standard]        | Lightning-fast ASGI web server.                                         |
+| Pydantic             | pydantic>=2.7.0          | Data validation and settings management using Python type hints.        |
+| Python-Dotenv        | python-dotenv>=1.0.1     | Reads key-value pairs from `.env` file into os.environ.                |
+| NumPy                | numpy>=1.26.4            | High-performance array and mathematical computations.                   |
+| Pandas               | pandas>=2.2.2            | Data structures and analysis tool for historical log series.            |
+| Scikit-Learn         | scikit-learn>=1.4.2      | Anomaly detection algorithms and preprocessing pipelines.               |
+| XGBoost              | xgboost>=2.0.3           | Gradient boosting regression framework for time-series forecasting.     |
+| Google OR-Tools      | ortools>=9.9.3963        | Mixed-Integer Linear Programming (MILP) solver for decision tradeoffs.  |
+| PyMongo              | pymongo>=4.7.2           | MongoDB driver for direct database reads/writes.                        |
++----------------------+--------------------------+-------------------------------------------------------------------------+
+
+
+3. ENVIRONMENT VARIABLES (in ml-service/.env)
+--------------------------------------------------------------------------------
+All sensitive keys and connection strings MUST be kept in `ml-service/.env`:
+
+PORT=8000
+HOST=0.0.0.0
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/ecosphere?retryWrites=true&w=majority
+SPRING_BOOT_API_URL=http://localhost:8080/api/v1
+GROQ_API_KEY=gsk_your_groq_api_key_here
+
+
+4. HOW TO RUN THE PYTHON FASTAPI SERVICE
+--------------------------------------------------------------------------------
+1. Navigate to the ml-service directory:
+   cd ml-service
+
+2. Create a Python Virtual Environment:
+   python -m venv venv
+
+3. Activate the Virtual Environment:
+   - Windows (PowerShell): .\venv\Scripts\Activate.ps1
+   - Windows (CMD):        .\venv\Scripts\activate.bat
+   - Linux/macOS:          source venv/bin/activate
+
+4. Install Dependencies:
+   pip install -r requirements.txt
+
+5. Start the Server:
+   uvicorn app.main:app --reload --port 8000
+
+6. Interactive API Documentation (Swagger UI):
+   Open http://localhost:8000/docs in your browser.
+================================================================================

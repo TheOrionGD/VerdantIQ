@@ -2,7 +2,15 @@
 
 This document contains copy-pasteable, highly detailed prompts to generate the React frontend for the EcoSphere platform. It replaces traditional navigation interfaces (sidebars, menus, footers) with an **AI Omnibar + Spatial Workspace Canvas** layout. The styling uses the **Emerald Oasis** Light Mode theme.
 
+> [!NOTE]
+> **Backend Service Integration Status (Phases 0–10 Completed ✅)**:
+> All workspace nodes specified in Part 2 below are fully wired to production-ready microservice REST endpoints:
+> - **Spring Boot Core (`:8080`)**: Auth, Onboarding Baseline, Activity Logs, OCR Bill Reader, PDF Statements, Community Aggregations, EXIF Verification, Notifications & Real-Time SSE Stream (`/api/v1/notifications/stream`), Pre-Shaped Chart Data & System Telemetry (`/api/v1/admin/telemetry`).
+> - **FastAPI ML & Solvers (`:8000`)**: XGBoost Consumption Forecasts, Scikit-learn Anomaly Explanations, Google OR-Tools MILP Solver, ML Pipeline Telemetry (`/api/v1/ml/telemetry`).
+> - **Groq AI Layer**: Context-Grounded Llama-3.3 Assistant (`/api/v1/assistant/chat`).
+
 ---
+
 
 ## Part 1: Master Theme & Spatial Workspace Canvas Prompt
 *Use this prompt first to generate the fullscreen interactive canvas, the floating Groq AI Omnibar, and the spatial zoom/pan mechanics.*
@@ -213,7 +221,7 @@ Build the System Admin Console Node.
 
 1. Details & Panel:
 - Card Dimensions: `w-[950px] bg-white rounded-2xl border border-slate-100 p-8 shadow-lg`.
-- Telemetry grids showing system health, Redis cache latency, and scikit-learn/XGBoost model training error stats.
+- Telemetry grids showing system health, MongoDB latency, and scikit-learn/XGBoost model training error stats.
 - Variable configuration matrices (kg CO₂ coefficients) with immediate database updates.
 - "Retrain ML Models" run scheduler triggers.
 ```

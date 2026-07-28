@@ -194,7 +194,7 @@ export const LoginPage = () => {
                   </span>
                   <h3 className="text-xl font-black text-white mt-0.5">System Admin</h3>
                   <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                    Global platform administrators maintaining microservice telemetry, tuning XGBoost ML parameters, inspecting PostGIS storage pools, and auditing security logs.
+                    Global platform administrators maintaining microservice telemetry, tuning XGBoost ML parameters, inspecting MongoDB document storage pools, and auditing security logs.
                   </p>
                 </div>
 
@@ -209,7 +209,7 @@ export const LoginPage = () => {
                   </div>
                   <div className="text-[11px] text-slate-300 flex items-center space-x-2 font-medium">
                     <CheckCircle2 className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                    <span>PostgreSQL/PostGIS & Audit Logs</span>
+                    <span>MongoDB Collections & Audit Logs</span>
                   </div>
                 </div>
               </div>

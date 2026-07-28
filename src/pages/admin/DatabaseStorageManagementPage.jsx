@@ -7,19 +7,19 @@ export const DatabaseStorageManagementPage = () => {
   const [isBackingUp, setIsBackingUp] = useState(false);
 
   const [dbTables] = useState([
-    { name: 'user_activity_logs', engine: 'PostgreSQL', rows: '142,850', size: '48.2 MB', spatialIdx: 'GIST Indexed' },
-    { name: 'digital_twin_states', engine: 'PostgreSQL/JSONB', rows: '12,400', size: '18.4 MB', spatialIdx: 'N/A' },
-    { name: 'campus_geofences', engine: 'PostGIS (Geometry)', rows: '1,280', size: '6.1 MB', spatialIdx: 'SP-GiST Active' },
-    { name: 'ml_xgb_checkpoints', engine: 'Redis Store', rows: '850', size: '2.4 MB', spatialIdx: 'In-Memory Key/Val' },
-    { name: 'audit_verifications', engine: 'PostgreSQL', rows: '38,900', size: '14.8 MB', spatialIdx: 'B-Tree Indexed' },
+    { name: 'user_activity_logs', engine: 'MongoDB Collection', rows: '142,850', size: '48.2 MB', spatialIdx: '2dsphere GeoJSON' },
+    { name: 'digital_twin_states', engine: 'MongoDB / BSON', rows: '12,400', size: '18.4 MB', spatialIdx: 'N/A' },
+    { name: 'campus_geofences', engine: 'MongoDB GeoSpatial', rows: '1,280', size: '6.1 MB', spatialIdx: '2dsphere Active' },
+    { name: 'ml_xgb_checkpoints', engine: 'MongoDB Collection', rows: '850', size: '2.4 MB', spatialIdx: 'Single Field Index' },
+    { name: 'audit_verifications', engine: 'MongoDB Collection', rows: '38,900', size: '14.8 MB', spatialIdx: 'Compound Index' },
   ]);
 
   const triggerBackup = () => {
     setIsBackingUp(true);
-    showToast('Initializing PostgreSQL WAL pg_dump snapshot...', 'info');
+    showToast('Initializing mongodump BSON snapshot...', 'info');
     setTimeout(() => {
       setIsBackingUp(false);
-      showToast('Database snapshot archived to S3 bucket (89.9 MB)', 'success');
+      showToast('MongoDB database snapshot archived to S3 bucket (89.9 MB)', 'success');
     }, 2500);
   };
 
@@ -34,7 +34,7 @@ export const DatabaseStorageManagementPage = () => {
             Database & Storage Management
           </h2>
           <p className="text-xs text-slate-500">
-            Monitor PostgreSQL/PostGIS connection pools, spatial indexes, table row counts, and automated snapshots.
+            Monitor MongoDB connection pools, 2dsphere spatial indexes, document collection counts, and automated snapshots.
           </p>
         </div>
 
@@ -74,9 +74,9 @@ export const DatabaseStorageManagementPage = () => {
 
         <div className="p-4 md:p-5 rounded-3xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">PostGIS Index Speed</div>
+            <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">2dsphere Index Speed</div>
             <div className="text-xl md:text-2xl font-black text-slate-900 mt-1">12 ms</div>
-            <div className="text-[10px] font-bold text-emerald-mint mt-1">Spatial Index Active</div>
+            <div className="text-[10px] font-bold text-emerald-mint mt-1">GeoSpatial Index Active</div>
           </div>
           <div className="w-9 h-9 md:w-10 md:h-10 rounded-2xl bg-emerald-50 text-emerald-mint flex items-center justify-center shrink-0">
             <Layers className="w-4 h-4 md:w-5 md:h-5" />
@@ -98,14 +98,14 @@ export const DatabaseStorageManagementPage = () => {
       {/* Database Schema Tables */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-md p-4 md:p-6 space-y-4">
         <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-2">
-          <Database className="w-4 h-4 text-purple-600" /> PostgreSQL & Spatial PostGIS Table Schema
+          <Database className="w-4 h-4 text-purple-600" /> MongoDB Document Collections & GeoSpatial Schema
         </h3>
 
         <div className="overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0">
           <table className="w-full text-left text-xs min-w-[550px]">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-400 font-extrabold uppercase text-[10px] tracking-wider">
               <tr>
-                <th className="py-3 px-3">Table Name</th>
+                <th className="py-3 px-3">Collection Name</th>
                 <th className="py-3 px-3">Database Engine</th>
                 <th className="py-3 px-3">Total Records</th>
                 <th className="py-3 px-3">Storage Footprint</th>

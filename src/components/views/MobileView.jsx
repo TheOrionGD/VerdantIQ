@@ -338,25 +338,36 @@ const MobileTwin = () => {
 };
 
 // 4. Mobile Analytics
-const mockDataMobile = [
-  { day: 'M', actual: 18, predicted: 19 },
-  { day: 'T', actual: 17, predicted: 18 },
-  { day: 'W', actual: 21, predicted: 18 },
-  { day: 'T', actual: 16, predicted: 17 },
-  { day: 'F', actual: 19, predicted: 18 },
-  { day: 'S', actual: 24, predicted: 22 },
-  { day: 'S', actual: 22, predicted: 21 },
-];
-
 const MobileAnalytics = () => {
   const { executeOmnibarCommand } = useEcoSphere();
+  const [chartData, setChartData] = React.useState([
+    { day: 'M', actual: 18, predicted: 19 },
+    { day: 'T', actual: 17, predicted: 18 },
+    { day: 'W', actual: 21, predicted: 18 },
+    { day: 'T', actual: 16, predicted: 17 },
+    { day: 'F', actual: 19, predicted: 18 },
+    { day: 'S', actual: 24, predicted: 22 },
+    { day: 'S', actual: 22, predicted: 21 },
+  ]);
+
+  React.useEffect(() => {
+    import('../../services/apiService').then(({ apiService }) => {
+      apiService.predictions.getForecasts('7D')
+        .then((res) => {
+          if (res && res.forecastData) {
+            setChartData(res.forecastData);
+          }
+        })
+        .catch(() => {});
+    });
+  }, []);
 
   return (
     <div className="space-y-4 animate-fade-in text-slate-900">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-black text-slate-900">Behavioral Analytics</h2>
         <span className="text-xs font-bold text-emerald-mint bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-          XGBoost ML
+          XGBoost ML Live
         </span>
       </div>
 
@@ -365,7 +376,7 @@ const MobileAnalytics = () => {
         <div className="text-xs font-bold text-slate-500">Actual (Solid) vs ML Forecast (Dotted)</div>
         <div className="h-48 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={mockDataMobile}>
+            <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
               <XAxis dataKey="day" stroke="#94A3B8" fontSize={10} />
               <YAxis stroke="#94A3B8" fontSize={10} />
