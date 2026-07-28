@@ -21,6 +21,7 @@
 <br/>
 
 [📌 Executive Summary](#-executive-summary) • 
+[🏛️ Policies & SDGs](#️-government-policies-un-sdgs--regulatory-compliance) • 
 [🎯 Problem & Gap](#-problem-statement--research-gap) • 
 [🚀 Core System](#-proposed-system--architectural-breakdown) • 
 [⚡ 22+ Intelligent Features](#-22-detailed-functional-features) • 
@@ -40,6 +41,47 @@ The system integrates environmental monitoring, predictive analytics, household 
 
 > [!NOTE]
 > **Key Paradigm Shift:** Existing solutions act as *passive calculators* that report past emissions. VerdantIQ operates as an *active intelligent coach* that forecasts impact and optimizes multi-resource choices before decisions are made.
+
+---
+
+## 🏛️ Government Policies, UN SDGs & Regulatory Compliance
+
+VerdantIQ is architected to align directly with national sustainability policies, international environmental standards, and United Nations Sustainable Development Goals (SDGs), ensuring that personal and institutional actions translate into measurable policy outcomes.
+
+### 🌐 United Nations Sustainable Development Goals (UN SDGs) Alignment
+
+| UN SDG Target | Policy Objective | VerdantIQ System Implementation |
+| :--- | :--- | :--- |
+| ⚡ **SDG 7: Affordable & Clean Energy** | Promote renewable adoption & energy efficiency | Household Digital Twin energy simulation & peak-load electricity forecasting |
+| 🏙️ **SDG 11: Sustainable Cities & Communities** | Enhance green urban spaces & community action | Institutional campus analytics, tree plantation verification & local AQI intelligence |
+| ♻️ **SDG 12: Responsible Consumption & Production** | Reduce waste generation & increase recycling | Waste Segregation Intelligence & MILP multi-resource consumption optimizer |
+| 🌍 **SDG 13: Climate Action** | Combat climate change & reduce emissions | Proactive ML emission forecasting, carbon tracking & Groq AI explainable guidance |
+| 🌳 **SDG 15: Life on Land** | Halt land degradation & promote afforestation | Geotagged & QR-verified tree planting tracker with growth history logging |
+
+### 📜 Government & International Regulatory Policies Maintained
+
+> [!NOTE]
+> **Regulatory Integration:** VerdantIQ enforces standardized carbon emission factors, LCA methodologies, and waste management classifications recognized by regulatory bodies and international standards organizations.
+
+#### 1. 🇮🇳 India Mission LiFE (Lifestyle for Environment) & NAPCC
+- **Policy Framework:** NITI Aayog Mission LiFE directives promoting citizen-led environmental action.
+- **System Implementation:** Gamified daily eco-activity tracking, nudge-based behavioral intervention engine, and adaptive habit coaching aligned with Mission LiFE's 7 key action themes (*Save Energy, Save Water, Say No to Single-Use Plastic, Adopt Sustainable Food Systems, Reduce Waste, Adopt Healthy Lifestyles, Reduce E-Waste*).
+
+#### 2. 📑 ISO 14064-1:2018 & ISO 14040:2006 Standards
+- **ISO 14064-1 (Greenhouse Gas Quantification):** Standardized emission factor calculation methodologies for Scope 1 (direct fuel), Scope 2 (electricity grid carbon intensity), and Scope 3 (transit, food, waste).
+- **ISO 14040 (Life Cycle Assessment - LCA):** Multi-objective MILP optimization engine uses LCA principles to evaluate net environmental trade-offs across resource lifecycles.
+
+#### 3. ♻️ Solid Waste Management (SWM) Rules & CPCB Guidelines
+- **Regulatory Framework:** Central Pollution Control Board (CPCB) solid and e-waste management rules.
+- **System Implementation:** AI waste segregation classifier categorizing household waste into Wet/Organic, Dry/Recyclable, Hazardous, and E-Waste with localized collection guidelines.
+
+#### 4. 🏙️ Energy Conservation Building Code (ECBC) & Smart Grid Mission
+- **Policy Framework:** Bureau of Energy Efficiency (BEE) ECBC standards and Smart Metering directives.
+- **System Implementation:** Electricity analytics engine benchmarking household energy usage against regional climate zone thresholds and smart meter telemetry data.
+
+#### 5. 📊 Business Responsibility & Sustainability Reporting (BRSR / ESG)
+- **Policy Framework:** SEBI BRSR mandatory reporting framework for institutional ESG compliance.
+- **System Implementation:** Automated PDF report generation for institutional admins containing verified campus-wide carbon, water, and waste metrics suitable for ESG audits.
 
 ---
 
