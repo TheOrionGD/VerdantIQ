@@ -18,7 +18,7 @@
 .env.production.local
 *.env
 !.env.example
-
+ui-ux-pro-max-skill
 # ------------------------------------------------------------------------------
 # 2. Node.js, Frontend & Bundler Artifacts (Vite / React)
 # ------------------------------------------------------------------------------
