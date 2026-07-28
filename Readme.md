@@ -106,20 +106,24 @@ Most current sustainability apps offer:
 
 ```mermaid
 flowchart TD
-    %% Styling
+    A["👤 User Activities & Sensor Input"] --> B["📥 Data Collection & Verification Layer"]
+    B --> C["🧠 ML Behavior Learning Engine"]
+    C --> D["🔮 Predictive Analytics Engine"]
+    D --> E["🏡 Household Digital Twin Sandbox"]
+    E --> F["⚡ Google OR-Tools MILP Optimizer"]
+    F --> G["🤖 Groq AI Explainable Assistant"]
+    G --> H["📊 Adaptive Sustainability Dashboard"]
+    H --> I["📜 Personalized Reports & Community Insights"]
+
     classDef user fill:#0F172A,stroke:#38BDF8,stroke-width:2px,color:#F8FAFC;
     classDef ml fill:#065F46,stroke:#10B981,stroke-width:2px,color:#F8FAFC;
     classDef ai fill:#78350F,stroke:#F59E0B,stroke-width:2px,color:#F8FAFC;
     classDef core fill:#1E1B4B,stroke:#6366F1,stroke-width:2px,color:#F8FAFC;
 
-    A[👤 User Activities & Sensor Input] :::user --> B[📥 Data Collection & Verification Layer] :::core
-    B --> C[🧠 ML Behavior Learning Engine] :::ml
-    C --> D[🔮 Predictive Analytics Engine] :::ml
-    D --> E[🏡 Household Digital Twin Sandbox] :::core
-    E --> F[⚡ Google OR-Tools MILP Optimizer] :::ml
-    F --> G[🤖 Groq AI Explainable Assistant] :::ai
-    G --> H[📊 Adaptive Sustainability Dashboard] :::user
-    H --> I[📜 Personalized Reports & Community Insights] :::user
+    class A,H,I user;
+    class B,E core;
+    class C,D,F ml;
+    class G ai;
 ```
 
 ---
@@ -306,14 +310,14 @@ sequenceDiagram
     participant OR as ⚡ Google OR-Tools
     participant AI as 🧠 Groq AI Explainer
 
-    User->>UI: Request Scenario ("Bike vs. Bus tomorrow")
+    User->>UI: Request Scenario - Bike vs Bus Tomorrow
     UI->>Gateway: Forward Request + Context Payload
     Gateway->>ML: Fetch Emission & Weather Predictions
     ML-->>Gateway: Return Forecast (Bike: 0kg CO2, Bus: 1.2kg CO2)
     Gateway->>OR: Run Multi-Resource MILP Solver
     OR-->>Gateway: Return Optimal Vector (Recommend Bike)
     Gateway->>AI: Send Numeric Vectors + User Preferences
-    AI-->>Gateway: Generate Explainable Text ("Biking saves 1.2kg CO2 and hits weekly goal")
+    AI-->>Gateway: Generate Explainable Text (Biking saves 1.2kg CO2 & hits weekly goal)
     Gateway-->>UI: Deliver Complete Structured Response
     UI-->>User: Render Visual Metrics + Natural Language Guidance
 ```
